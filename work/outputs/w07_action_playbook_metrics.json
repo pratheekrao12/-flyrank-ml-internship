@@ -1,0 +1,65 @@
+{
+  "assignment": "w07_action_playbook",
+  "lane": "Lane 2 - Refresh / Content Opportunity Scoring",
+  "development_month": "2026-03",
+  "queue_generation_method": {
+    "source": "unchanged Week 4 transparent baseline",
+    "feature_window": "March 1-15 inclusive",
+    "target_window": "March 16-31, joined separately only for retrospective analysis and not used for queue membership or predictive inputs",
+    "rule": [
+      "early_impressions >= 500: +1",
+      "0 < weighted_avg_position <= 20: +1",
+      "early_ctr < 0.5%: +1"
+    ],
+    "action": "score 3 receives review_ctr_refresh; otherwise monitor",
+    "tie_breaking": [
+      "baseline_refresh_score descending",
+      "active_search_days descending",
+      "early_impressions descending",
+      "client_hash_id ascending",
+      "content_hash_id ascending"
+    ]
+  },
+  "population": {
+    "full_early_period_action_queue": {
+      "purpose": "All eligible pages ranked for human review using March 1-15 information only",
+      "candidate_pages": 151981,
+      "action_distribution": {
+        "monitor": 125384,
+        "review_ctr_refresh": 26597
+      }
+    },
+    "historical_evaluable_subset": {
+      "purpose": "Retrospective decline-proxy association and outcome analysis only; not used for queue membership",
+      "evaluable_later_label_pages": 85565,
+      "population_query_evaluable_later_label_pages": 85565,
+      "partial_late_availability_pages": 55902
+    },
+    "early_candidate_population_query": 151981
+  },
+  "week6_grouped_logistic_validation": {
+    "train_pages": 81452,
+    "test_pages": 4113,
+    "train_clients": 31,
+    "test_clients": 8,
+    "client_overlap": 0,
+    "precision_at_20": 0.55,
+    "precision_at_50": 0.48,
+    "roc_auc": 0.7667188219052002,
+    "positive_class_rate": 0.32214928276197424
+  },
+  "validation_limits": [
+    "Metrics apply to the 16-date historical evaluable subset, not to the full early-period action queue.",
+    "The grouped holdout uses 8 test clients and zero client overlap, so confidence is limited.",
+    "The proxy is historical association and not future decline or refresh benefit.",
+    "The action queue uses March 1-15 features and the Week 4 baseline, not held-out logistic probabilities or later-period availability."
+  ],
+  "exports": {
+    "queue_csv": "work/outputs/w07_lane2_action_queue.csv",
+    "action_figure": "work/figures/w07_action_distribution.svg",
+    "decay_figure": "work/figures/w07_decay_proxy_by_position.svg"
+  },
+  "public_safety": [
+    "No private names, URLs, raw queries, tokens, target-derived columns, or late-period fields are exported in the action queue."
+  ]
+}
