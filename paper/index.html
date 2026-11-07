@@ -1,0 +1,133 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="A client-grouped evaluation of search signals for prioritizing content pages for human review."><title>Can search signals prioritize content pages for human review?</title><style>
+:root{--ink:#20241f;--muted:#60685e;--paper:#f5f2eb;--white:#fffefa;--line:#d9d8ce;--green:#245848;--gold:#c98535}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1rem}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.7 ui-serif,Georgia,Cambria,"Times New Roman",serif}a{color:#205a48;text-decoration-thickness:.08em;text-underline-offset:.18em}a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}.mast{background:#203b34;color:#f6f3e9;padding:1rem clamp(1rem,4vw,4rem);font:600 .78rem ui-sans-serif,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}.layout{max-width:1320px;margin:auto;padding:clamp(1rem,4vw,3.5rem);display:grid;grid-template-columns:190px minmax(0,760px);gap:clamp(2rem,6vw,6rem);align-items:start}nav{position:sticky;top:1.2rem;font:500 .84rem/1.45 ui-sans-serif,system-ui,sans-serif}nav strong{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}nav a{display:block;padding:.35rem .65rem;color:#48534b;text-decoration:none;border-left:2px solid transparent}nav a:hover{border-color:var(--green);color:var(--green)}article{min-width:0}h1,h2,h3{line-height:1.18;letter-spacing:-.025em}h1{font-size:clamp(2.3rem,5vw,4.5rem);max-width:17ch;margin:.8rem 0}h2{font-size:clamp(1.55rem,3vw,2.1rem);margin:3.3rem 0 1rem}h3{font-size:1.2rem;margin:2rem 0 .7rem}p{max-width:70ch;margin:.9rem 0}.abstract{background:var(--white);border:1px solid var(--line);border-top:4px solid var(--green);padding:1.2rem 1.5rem;margin:2rem 0}.abstract strong{font:700 .76rem ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase}.abstract p{margin:.6rem 0 0}.callout{background:#e9ede5;border-left:4px solid var(--gold);padding:1rem 1.2rem;margin:2rem 0}figure{margin:1.6rem 0;padding:1rem;background:var(--white);border:1px solid var(--line)}figure img{display:block;width:100%;height:auto}figure figcaption{font:500 .83rem/1.55 ui-sans-serif,system-ui,sans-serif;color:var(--muted);padding:.7rem .2rem 0}.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font:500 .86rem/1.45 ui-sans-serif,system-ui,sans-serif;font-variant-numeric:tabular-nums;background:var(--white);margin:1rem 0}th,td{text-align:left;padding:.7rem;border-bottom:1px solid var(--line)}thead th{background:#e8ece4}.abstract+*{margin-top:1.5rem}code,pre{font:.88em ui-monospace,SFMono-Regular,Menlo,monospace}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#e9e7df;padding:1rem;border:1px solid var(--line)}li{margin:.45rem 0}#acknowledgments{margin-top:4rem;padding:1rem 0 3rem;border-top:2px solid var(--ink)}@media(max-width:850px){.layout{grid-template-columns:1fr;gap:1.2rem;padding:1rem}nav{position:static;background:var(--white);border:1px solid var(--line);padding:.85rem;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.1rem .4rem}nav strong{grid-column:1/-1}nav a{padding:.25rem 0;border:0;text-decoration:underline;text-decoration-color:#c4c7bb}}@media(max-width:480px){body{font-size:16px}.mast{padding:.85rem 1rem}nav{grid-template-columns:1fr 1fr}th,td{padding:.55rem;font-size:.79rem}figure{padding:.65rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
++</style></head><body><div class="mast">FlyRank ML Internship · Research capstone · March 2026</div><div class="layout"><nav aria-label="Paper sections"><strong>In this paper</strong><a href="#abstract">Abstract</a><a href="#problem">Problem</a><a href="#data">Data</a><a href="#methods">Methodology</a><a href="#results">Results</a><a href="#limits">Limitations</a><a href="#recommendations">Recommendations</a><a href="#reproducibility">Reproducibility</a><a href="#acknowledgments">Acknowledgments</a></nav><article><h1>Can search signals prioritize content pages for human review?</h1>
+<p><strong>Pratheek Rao</strong> · Lane 2 — Refresh / Content Opportunity Scoring · March 2026</p>
+<div class="abstract" id="abstract"><strong>Abstract</strong><p>Can early search signals help teams decide which content pages to review first? We analyze March 2026 from the FlyRank internship warehouse build v20260703, using 151,981 early-period candidates and an 85,565-page subset with complete later-period measurements. We compare a logistic-regression ranking over five March 1–15 features with the fixed three-signal Week 4 rule on the same client-grouped holdout, where 31 clients train and 8 clients are held out with no overlap. On 4,113 held-out pages, both rankers have Precision@20 of 0.55; the model reaches 0.48 versus 0.46 Precision@50 and 0.767 versus 0.572 ROC-AUC, while the decline-proxy base rate is 0.322. The result supports using the ranking as a human review aid in this historical sample, not predicting future performance or establishing that a refresh improves outcomes.</p></div>
+
+<div class="callout"><strong>Finding.</strong> On the grouped holdout, the model tied the transparent rule at Precision@20, edged it at Precision@50, and had higher ROC-AUC. This supports human review prioritization in the observed sample; it does not show that refreshing a page improves performance.</div>
+
+<h2 id="problem">1. Introduction / problem statement</h2>
+<p>An editor cannot inspect every page at once. This capstone asks whether early search-performance signals can help order a review queue so a person can inspect promising candidates first. The unit is one pseudonymized content page; the output is a rank and a transparent review/monitor suggestion. A false positive costs reviewer time, while an unreviewed page may leave a possible opportunity unnoticed. No intervention was measured, so this is a prioritization study rather than an estimate of refresh impact.</p>
+<h2 id="data">2. Data</h2>
+<p>The source is the gated FlyRank internship warehouse, build <strong>v20260703</strong>, specifically <code>fact_content_daily_performance</code> for March 2026. The full release contains <strong>78,835,655</strong> daily performance rows; the March partition contained <strong>9,841,378</strong> page-day rows, of which <strong>3,611,061</strong> had <code>gsc_data_available = TRUE</code>. Those rows are aggregated to one pseudonymized client/page pair.</p>
+<p>There are <strong>151,981</strong> early candidates with usable March 1–15 search measures. The retrospective label is available for <strong>85,565</strong> pages with all 16 dates from March 16–31. Another <strong>55,902</strong> pages had only 1–15 later dates and were excluded from label evaluation. Queue construction still covers the full early candidate frame and does not depend on later availability.</p>
+<p>The June <code>_sample</code> and overlapping 90-day query table were not used. Client/content pseudonyms support grouping, splitting, and deterministic tie-breaking only; they are not features. Later-period values, target-derived trends, product flags, and action labels were excluded from the feature set. No raw queries, page URLs, client names, or row-level exports are published here.</p>
+<h2 id="methods">3. Methodology</h2>
+<p>Five prediction-time features use March 1–15: early impressions, early clicks, impression-weighted average position, available search-day count, and early CTR (<code>100 × clicks / impressions</code>, as a percentage). The decline proxy is 1 when mean daily impressions over March 16–31 are lower than mean daily impressions over March 1–15, provided all 16 later dates are available.</p>
+<p>The unchanged Week 4 rule adds one point for at least 500 early impressions, one for a positive weighted position no worse than 20, and one for CTR below 0.5%; only score 3 suggests <code>review_ctr_refresh</code>. The learned ranker is a standardized logistic-regression pipeline with class-balanced fitting, <code>max_iter=1000</code>, and <code>random_state=42</code>.</p>
+<p>Evaluation uses <code>GroupShuffleSplit(test_size=0.20, random_state=42)</code> by client. It has 81,452 training pages from 31 clients and 4,113 test pages from 8 clients, with zero overlap. The model and baseline use the exact same test rows and labels. The Week 3/6 leakage checks excluded future-period fields, target-derived trends, action/product flags, and IDs from the feature vector; preprocessing was fit on training pages only.</p>
+<h2 id="results">4. Results (model versus baseline)</h2>
+<p>On the grouped holdout, the model ties the rule at Precision@20, has a two-page advantage in the top 50, and has higher ROC-AUC in this one split. The 32.2% positive base rate is shown beside both methods. The AUC difference describes ranking discrimination on these eight held-out clients, not guaranteed performance on new clients.</p>
+<table>
+<thead>
+<tr>
+  <th>Method</th>
+  <th style="text-align:right">Precision@20</th>
+  <th style="text-align:right">Precision@50</th>
+  <th style="text-align:right">ROC-AUC</th>
+  <th style="text-align:right">Base rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Week 4 rule baseline</td>
+  <td style="text-align:right">0.55 (11/20)</td>
+  <td style="text-align:right">0.46 (23/50)</td>
+  <td style="text-align:right">0.572</td>
+  <td style="text-align:right">0.322</td>
+</tr>
+<tr>
+  <td>Logistic regression</td>
+  <td style="text-align:right">0.55 (11/20)</td>
+  <td style="text-align:right">0.48 (24/50)</td>
+  <td style="text-align:right">0.767</td>
+  <td style="text-align:right">0.322</td>
+</tr>
+</tbody>
+</table>
+<p><figure role="img" aria-label="Grouped holdout comparison on the same 4,113 pages. Both methods have Precision@20 of 0.55; Precision@50 is 0.46 for the baseline and 0.48 for logistic regression; ROC-AUC is 0.572 and 0.767. The holdout base rate is 0.322."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 420" role="img" aria-labelledby="title desc">
+<title id="title">Grouped holdout ranking metrics</title>
+<desc id="desc">Week 4 rule and logistic regression on identical held-out pages. Base rate 0.322.</desc>
+<rect width="820" height="420" fill="#fffefa"/>
+<text x="30" y="40" font-family="Arial,sans-serif" font-size="21" font-weight="700">Ranking results on the same client holdout</text>
+<text x="30" y="65" font-family="Arial,sans-serif" font-size="13">4,113 pages · 8 held-out clients · positive rate 0.322</text>
+<text x="30" y="112" font-family="Arial,sans-serif" font-size="15" font-weight="700">Precision@20</text>
+<line x1="431.7" y1="119" x2="431.7" y2="180" stroke="#3b6d8c" stroke-width="2" stroke-dasharray="5,4"/>
+<text x="30" y="138" font-family="Arial,sans-serif" font-size="12">Week 4 rule baseline</text><rect x="290" y="125" width="242.0" height="18" rx="3" fill="#c98535"/><text x="542.0" y="139" font-family="Arial,sans-serif" font-size="12">0.550</text>
+<text x="30" y="166" font-family="Arial,sans-serif" font-size="12">Logistic regression</text><rect x="290" y="153" width="242.0" height="18" rx="3" fill="#245848"/><text x="542.0" y="167" font-family="Arial,sans-serif" font-size="12">0.550</text>
+<line x1="290" y1="184" x2="730" y2="184" stroke="#d9d8ce"/>
+<text x="30" y="206" font-family="Arial,sans-serif" font-size="15" font-weight="700">Precision@50</text>
+<line x1="431.7" y1="213" x2="431.7" y2="274" stroke="#3b6d8c" stroke-width="2" stroke-dasharray="5,4"/>
+<text x="30" y="232" font-family="Arial,sans-serif" font-size="12">Week 4 rule baseline</text><rect x="290" y="219" width="202.4" height="18" rx="3" fill="#c98535"/><text x="502.4" y="233" font-family="Arial,sans-serif" font-size="12">0.460</text>
+<text x="30" y="260" font-family="Arial,sans-serif" font-size="12">Logistic regression</text><rect x="290" y="247" width="211.2" height="18" rx="3" fill="#245848"/><text x="511.2" y="261" font-family="Arial,sans-serif" font-size="12">0.480</text>
+<line x1="290" y1="278" x2="730" y2="278" stroke="#d9d8ce"/>
+<text x="30" y="300" font-family="Arial,sans-serif" font-size="15" font-weight="700">ROC-AUC</text>
+<text x="30" y="326" font-family="Arial,sans-serif" font-size="12">Week 4 rule baseline</text><rect x="290" y="313" width="251.5" height="18" rx="3" fill="#c98535"/><text x="551.5" y="327" font-family="Arial,sans-serif" font-size="12">0.572</text>
+<text x="30" y="354" font-family="Arial,sans-serif" font-size="12">Logistic regression</text><rect x="290" y="341" width="337.4" height="18" rx="3" fill="#245848"/><text x="637.4" y="355" font-family="Arial,sans-serif" font-size="12">0.767</text>
+<line x1="290" y1="372" x2="730" y2="372" stroke="#d9d8ce"/>
+<text x="30" y="398" font-family="Arial,sans-serif" font-size="12">Dashed markers in precision rows = positive-class base rate</text>
+</svg><figcaption>Grouped holdout comparison on the same 4,113 pages. Both methods have Precision@20 of 0.55; Precision@50 is 0.46 for the baseline and 0.48 for logistic regression; ROC-AUC is 0.572 and 0.767. The holdout base rate is 0.322.</figcaption></figure></p>
+<p><strong>Figure 1.</strong> Both methods use the same grouped test set. Dashed markers in the precision rows show the 0.322 positive-class rate.</p>
+<p>The transparent rule flags <strong>26,597</strong> of 151,981 candidates (<strong>17.5%</strong>) for human CTR review; 125,384 remain in monitor status.</p>
+<p><figure role="img" aria-label="Action queue contains 26,597 pages suggested for CTR review and 125,384 pages to monitor, out of 151,981 early-period candidates."><svg xmlns="http://www.w3.org/2000/svg" width="720" height="420">
+<rect width="100%" height="100%" fill="white"/>
+<text x="360" y="35" text-anchor="middle" font-family="sans-serif" font-size="20">Week 7 Lane 2 Action Queue Distribution</text>
+<text x="20" y="130" font-family="sans-serif" font-size="16">monitor</text>
+<rect x="230" y="110" width="520.0" height="55" fill="#6c7a89"/>
+<text x="760.0" y="144" font-family="sans-serif" font-size="16">125384</text>
+<text x="20" y="240" font-family="sans-serif" font-size="16">review_ctr_refresh</text>
+<rect x="230" y="220" width="110.3" height="55" fill="#c0392b"/>
+<text x="350.3" y="254" font-family="sans-serif" font-size="16">26597</text>
+</svg><figcaption>Action queue contains 26,597 pages suggested for CTR review and 125,384 pages to monitor, out of 151,981 early-period candidates.</figcaption></figure></p>
+<p><strong>Figure 2.</strong> Week 7 action distribution. A review suggestion is a prompt for human inspection, not an instruction to edit or publish.</p>
+<p>Within the evaluable subset, low early CTR (&lt;0.5%) is associated with a higher decline-proxy rate in each measured position band. This is observational and does not show that changing a title, snippet, or page will improve outcomes.</p>
+<p><figure role="img" aria-label="Across four position bands, the observed decline-proxy rate is higher in the low-CTR group than in the at-least-0.5-percent CTR group."><svg xmlns="http://www.w3.org/2000/svg" width="900" height="520">
+<rect width="100%" height="100%" fill="white"/>
+<text x="450" y="35" text-anchor="middle" font-family="sans-serif" font-size="20">Observed Proxy Rate by Position and Early CTR</text>
+<text x="25" y="85" font-family="sans-serif" font-size="14">Early CTR: low=&lt;0.5% (blue), other=&gt;=0.5% (orange)</text>
+<text x="20" y="148" font-family="sans-serif" font-size="14">top_3_1_3</text>
+<rect x="180" y="130" width="263.7" height="25" fill="#3366cc"/>
+<text x="451.7" y="148" font-family="sans-serif" font-size="13">0.440</text>
+<rect x="180" y="162" width="167.1" height="25" fill="#ed7d31"/>
+<text x="355.1" y="180" font-family="sans-serif" font-size="13">0.279</text>
+<text x="20" y="233" font-family="sans-serif" font-size="14">page1_4_10</text>
+<rect x="180" y="215" width="272.1" height="25" fill="#3366cc"/>
+<text x="460.1" y="233" font-family="sans-serif" font-size="13">0.453</text>
+<rect x="180" y="247" width="187.8" height="25" fill="#ed7d31"/>
+<text x="375.8" y="265" font-family="sans-serif" font-size="13">0.313</text>
+<text x="20" y="318" font-family="sans-serif" font-size="14">striking_11_20</text>
+<rect x="180" y="300" width="245.5" height="25" fill="#3366cc"/>
+<text x="433.5" y="318" font-family="sans-serif" font-size="13">0.409</text>
+<rect x="180" y="332" width="216.2" height="25" fill="#ed7d31"/>
+<text x="404.2" y="350" font-family="sans-serif" font-size="13">0.360</text>
+<text x="20" y="403" font-family="sans-serif" font-size="14">deep_or_lower_gt20</text>
+<rect x="180" y="385" width="264.0" height="25" fill="#3366cc"/>
+<text x="452.0" y="403" font-family="sans-serif" font-size="13">0.440</text>
+<rect x="180" y="417" width="234.0" height="25" fill="#ed7d31"/>
+<text x="422.0" y="435" font-family="sans-serif" font-size="13">0.390</text>
+</svg><figcaption>Across four position bands, the observed decline-proxy rate is higher in the low-CTR group than in the at-least-0.5-percent CTR group.</figcaption></figure></p>
+<p><strong>Figure 3.</strong> Historical decline-proxy rate by early CTR and position. Rates use the 85,565-page evaluable subset; subgroup sizes and observational design limit interpretation.</p>
+<h2 id="limits">5. Limitations &amp; honest framing</h2>
+<p>The outcome is a historical within-month proxy, not future decline, search-engine ranking success, or a causal refresh effect. Only 8 clients are in the grouped holdout, and a single seeded split does not capture split-to-split variability. The complete-label subset may differ from pages with incomplete later measurements. Seasonality, competition, indexing, and measurement conditions are not represented by the five features. The action queue and model metrics apply to different populations: the queue uses the Week 4 rule over all early candidates, while model metrics apply to the evaluable grouped holdout. No monetary cost or editor acceptance data was available.</p>
+<h2 id="recommendations">6. Ranked recommendations</h2>
+<ol>
+<li><strong>Review score-3 pages first.</strong> For pages meeting all three rule conditions, inspect current visibility, search intent, title/snippet, indexing, freshness, competitors, and seasonality. These 26,597 pages are candidates for human review, not proven refresh opportunities.</li>
+<li><strong>Keep score-2 pages in monitor status.</strong> The 7,612 visible-demand-near-opportunity pages can be considered when capacity remains, after contextual checks. Do not silently expand the rule based on the model result.</li>
+<li><strong>Monitor low-signal pages and improve evidence.</strong> When signals are weak or unavailable, wait for enough data rather than infer that content should be pruned.</li>
+</ol>
+<p>Do not automate rewriting, publishing, deletion, redirects, canonical/indexation changes, or high-impact decisions from a score alone. Record accept/defer/reject reasons. Monitor queue composition, human acceptance, later Precision@K, feature drift, base-rate change, and ranking stability; proposed Week 7 thresholds are starting points, not validated operating limits.</p>
+<h2 id="reproducibility">7. Reproducibility</h2>
+<p>The executed capstone reconstructs the March frame from the gated parquet partition, fits the grouped model, compares the Week 4 rule on the identical holdout, exports aggregate metrics, and regenerates this page's figures. A fresh run requires access to <code>FlyRank/internship-warehouse</code> and a locally configured <code>HF_TOKEN</code>; the token is read from the environment or ignored <code>.env</code> and is never written to notebook output.</p>
+<pre><code class="language-bash">pip install -r requirements.txt
+jupyter notebook work/notebooks/capstone.ipynb
+</code></pre>
+<ul>
+<li><a href="https://github.com/pratheekrao12/-flyrank-ml-internship">Repository</a></li>
+<li><a href="https://github.com/pratheekrao12/-flyrank-ml-internship/blob/main/work/notebooks/capstone.ipynb">Capstone notebook</a></li>
+<li><a href="https://github.com/pratheekrao12/-flyrank-ml-internship/blob/main/work/notebooks/w06_validation_audit.ipynb">Week 6 validation audit</a></li>
+<li><a href="https://github.com/pratheekrao12/-flyrank-ml-internship/blob/main/work/notebooks/w07_action_playbook.ipynb">Week 7 action playbook</a></li>
+</ul>
+<p>The group split seed is 42. <code>work/outputs/capstone_metrics.json</code> records the aggregate results and feature definitions.</p>
+<h2 id="acknowledgments">8. Acknowledgments &amp; data credit</h2>
+<p>Built on the <a href="https://flyrank.ai">FlyRank ML Internship dataset</a>.</p>
+</article></div></body></html>
