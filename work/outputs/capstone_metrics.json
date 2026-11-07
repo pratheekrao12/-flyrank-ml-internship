@@ -1,0 +1,39 @@
+{
+  "release": "FlyRank internship warehouse build v20260703",
+  "table": "fact_content_daily_performance",
+  "month": "2026-03",
+  "early_candidate_pages": 151981,
+  "complete_label_pages": 85565,
+  "train_pages": 81452,
+  "test_pages": 4113,
+  "train_clients": 31,
+  "test_clients": 8,
+  "client_overlap": 0,
+  "positive_class_base_rate": 0.32214928276197424,
+  "seed": 42,
+  "methods": [
+    {
+      "Method": "Week 4 rule baseline",
+      "Precision@20": 0.55,
+      "Precision@50": 0.46,
+      "ROC-AUC": 0.5715902384884004,
+      "Base rate": 0.32214928276197424
+    },
+    {
+      "Method": "Logistic regression",
+      "Precision@20": 0.55,
+      "Precision@50": 0.48,
+      "ROC-AUC": 0.7667188219052002,
+      "Base rate": 0.32214928276197424
+    }
+  ],
+  "features": [
+    "early_impressions",
+    "early_clicks",
+    "weighted_avg_position",
+    "active_search_days",
+    "early_ctr"
+  ],
+  "label": "late mean daily impressions below early mean daily impressions; complete 16-date late window",
+  "public_safety": "aggregate results only; no IDs, raw queries, URLs, names, tokens, or row-level records"
+}

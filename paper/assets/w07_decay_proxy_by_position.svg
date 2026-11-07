@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520">
+<rect width="100%" height="100%" fill="white"/>
+<text x="450" y="35" text-anchor="middle" font-family="sans-serif" font-size="20">Observed Proxy Rate by Position and Early CTR</text>
+<text x="25" y="85" font-family="sans-serif" font-size="14">Early CTR: low=&lt;0.5% (blue), other=&gt;=0.5% (orange)</text>
+<text x="20" y="148" font-family="sans-serif" font-size="14">top_3_1_3</text>
+<rect x="180" y="130" width="263.7" height="25" fill="#3366cc"/>
+<text x="451.7" y="148" font-family="sans-serif" font-size="13">0.440</text>
+<rect x="180" y="162" width="167.1" height="25" fill="#ed7d31"/>
+<text x="355.1" y="180" font-family="sans-serif" font-size="13">0.279</text>
+<text x="20" y="233" font-family="sans-serif" font-size="14">page1_4_10</text>
+<rect x="180" y="215" width="272.1" height="25" fill="#3366cc"/>
+<text x="460.1" y="233" font-family="sans-serif" font-size="13">0.453</text>
+<rect x="180" y="247" width="187.8" height="25" fill="#ed7d31"/>
+<text x="375.8" y="265" font-family="sans-serif" font-size="13">0.313</text>
+<text x="20" y="318" font-family="sans-serif" font-size="14">striking_11_20</text>
+<rect x="180" y="300" width="245.5" height="25" fill="#3366cc"/>
+<text x="433.5" y="318" font-family="sans-serif" font-size="13">0.409</text>
+<rect x="180" y="332" width="216.2" height="25" fill="#ed7d31"/>
+<text x="404.2" y="350" font-family="sans-serif" font-size="13">0.360</text>
+<text x="20" y="403" font-family="sans-serif" font-size="14">deep_or_lower_gt20</text>
+<rect x="180" y="385" width="264.0" height="25" fill="#3366cc"/>
+<text x="452.0" y="403" font-family="sans-serif" font-size="13">0.440</text>
+<rect x="180" y="417" width="234.0" height="25" fill="#ed7d31"/>
+<text x="422.0" y="435" font-family="sans-serif" font-size="13">0.390</text>
+</svg>
